@@ -7,6 +7,8 @@ import { convertDurationToTimeString } from "../utils/convertDurationToTimeStrin
 
 import styles from "./home.module.scss";
 import Link from "next/link";
+import { useContext } from "react";
+import { PlayerContext } from "../contexts/PlayerContext";
 
 type Episodes = {
   id: string;
@@ -25,6 +27,7 @@ type HomeProps = {
 };
 
 export default function Home({ latestEpisodes, allEpisodes }: HomeProps) {
+  const { play } = useContext(PlayerContext);
   // Modo SPA - Utilizando o hook do React, porém o brownser não espera a chamada da API para indexação
   // useEffect(() => {
   //   fetch('http://localhost:3333/episodes')
@@ -58,7 +61,7 @@ export default function Home({ latestEpisodes, allEpisodes }: HomeProps) {
                   <span>{ep.durationAsString}</span>
                 </div>
 
-                <button type="button">
+                <button type="button" onClick={() => play(ep)}>
                   <img src="/play-green.svg" alt="Tocar episódio" />
                 </button>
               </li>
