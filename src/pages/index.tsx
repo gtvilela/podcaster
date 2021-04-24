@@ -29,11 +29,6 @@ type HomeProps = {
 export default function Home({ latestEpisodes, allEpisodes }: HomeProps) {
   const { play } = useContext(PlayerContext);
   // Modo SPA - Utilizando o hook do React, porém o brownser não espera a chamada da API para indexação
-  // useEffect(() => {
-  //   fetch('http://localhost:3333/episodes')
-  //         .then(response => response.json())
-  //         .then(data => console.log(data))
-  // }, [])
 
   return (
     <div className={styles.homepage}>
@@ -158,13 +153,4 @@ export const getStaticProps: GetStaticProps = async () => {
   };
 };
 
-//Modo SSR - Chama a api da função toda vez que o usuário acessar essa página
-// export async function getServerSideProps(): GetServerSideProps {
-// const response = await fetch('http://localhost:3333/episodes')
-// const data = await response.json()
-
-// return { props: {
-//       episodes: data,
-//     }
-//   }
-// }
+//Modo SSR - Chama a api da função toda vez que o usuário acessar essa página => getServerSideProps()
