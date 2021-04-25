@@ -1,5 +1,6 @@
 import { GetStaticProps } from "next";
 import Image from "next/image";
+import Head from 'next/head';
 import { format, parseISO } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { api } from "../services/api";
@@ -7,8 +8,7 @@ import { convertDurationToTimeString } from "../utils/convertDurationToTimeStrin
 
 import styles from "./home.module.scss";
 import Link from "next/link";
-import { useContext } from "react";
-import { PlayerContext } from "../contexts/PlayerContext";
+import { usePlayer } from "../contexts/PlayerContext";
 
 type Episodes = {
   id: string;
@@ -27,16 +27,20 @@ type HomeProps = {
 };
 
 export default function Home({ latestEpisodes, allEpisodes }: HomeProps) {
-  const { play } = useContext(PlayerContext);
-  // Modo SPA - Utilizando o hook do React, porém o brownser não espera a chamada da API para indexação
+  
+  const { playList } = usePlayer();
+  const episodeList = [...latestEpisodes, ...allEpisodes];
 
   return (
     <div className={styles.homepage}>
+      <Head>
+        <title>Home | Podcastr</title>
+      </Head>
       <section className={styles.latestEpisodes}>
         <h2>Últimos lançamentos</h2>
 
         <ul>
-          {latestEpisodes.map((ep) => {
+          {latestEpisodes.map((ep, index) => {
             return (
               <li key={ep.id}>
                 <Image
@@ -56,7 +60,7 @@ export default function Home({ latestEpisodes, allEpisodes }: HomeProps) {
                   <span>{ep.durationAsString}</span>
                 </div>
 
-                <button type="button" onClick={() => play(ep)}>
+                <button type="button" onClick={() => playList(episodeList, index)}>
                   <img src="/play-green.svg" alt="Tocar episódio" />
                 </button>
               </li>
@@ -78,7 +82,7 @@ export default function Home({ latestEpisodes, allEpisodes }: HomeProps) {
             </tr>
           </thead>
           <tbody>
-            {allEpisodes.map((ep) => {
+            {allEpisodes.map((ep, index) => {
               return (
                 <tr key={ep.id}>
                   <td style={{ width: 72 }}>
@@ -99,7 +103,7 @@ export default function Home({ latestEpisodes, allEpisodes }: HomeProps) {
                   <td style={{ width: 100 }}>{ep.publishedAt}</td>
                   <td>{ep.durationAsString}</td>
                   <td>
-                    <button type="button">
+                    <button type="button" onClick={() => playList(episodeList, index + latestEpisodes.length)}>
                       <img src="/play-green.svg" alt="Tocar Episódio" />
                     </button>
                   </td>
@@ -112,7 +116,7 @@ export default function Home({ latestEpisodes, allEpisodes }: HomeProps) {
     </div>
   );
 }
-
+  // Modo SPA - Utilizando o hook do React, porém o brownser não espera a chamada da API para indexação
 //Modo SSG - Só funciona em producão, ou seja, tem que buildar o app para ver o SSG funionando
 // Modo SSG - Você pode programar de quanto em quanto tempo a api é chamada novamene
 export const getStaticProps: GetStaticProps = async () => {
